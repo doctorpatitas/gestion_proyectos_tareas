@@ -1,0 +1,11 @@
+export enum TAREA_ESTADO {
+    PENDIENTE = 'PENDIENTE',
+    EN_PROGRESO = 'EN_PROGRESO',
+    COMPLETA = 'COMPLETA',
+}
+
+export enum TAREA_PRIORIDAD {
+    BAJA = 'BAJA',
+    MEDIA = 'MEDIA',
+    ALTA = 'ALTA',
+}
