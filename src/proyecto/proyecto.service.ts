@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Proyecto } from './entities/proyecto.entity.js';
@@ -14,7 +19,10 @@ export class ProyectoService {
   ) {}
 
   async create(createProyectoDto: CreateProyectoDto) {
-    this.validarFechas(createProyectoDto.fecha_inicio, createProyectoDto.fecha_finalizacion);
+    this.validarFechas(
+      createProyectoDto.fecha_inicio,
+      createProyectoDto.fecha_finalizacion,
+    );
     const proyecto = this.proyectoRepository.create(createProyectoDto);
     return this.proyectoRepository.save(proyecto);
   }
@@ -42,7 +50,8 @@ export class ProyectoService {
     const completadas = proyecto.tareas.filter(
       (tarea) => tarea.estado === TAREA_ESTADO.COMPLETA,
     ).length;
-    const porcentaje = total === 0 ? 0 : Number(((completadas / total) * 100).toFixed(2));
+    const porcentaje =
+      total === 0 ? 0 : Number(((completadas / total) * 100).toFixed(2));
 
     return {
       proyecto_id: proyecto.id,
@@ -55,7 +64,8 @@ export class ProyectoService {
   async update(id: number, updateProyectoDto: UpdateProyectoDto) {
     const proyecto = await this.findOne(id);
     const inicio = updateProyectoDto.fecha_inicio ?? proyecto.fecha_inicio;
-    const fin = updateProyectoDto.fecha_finalizacion ?? proyecto.fecha_finalizacion;
+    const fin =
+      updateProyectoDto.fecha_finalizacion ?? proyecto.fecha_finalizacion;
     this.validarFechas(inicio, fin);
 
     this.proyectoRepository.merge(proyecto, updateProyectoDto);

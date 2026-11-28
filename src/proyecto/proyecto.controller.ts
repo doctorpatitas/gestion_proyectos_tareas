@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProyectoService } from './proyecto.service.js';
 import { CreateProyectoDto } from './dto/create-proyecto.dto.js';
@@ -41,12 +50,17 @@ export class ProyectoController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un proyecto' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateProyectoDto: UpdateProyectoDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProyectoDto: UpdateProyectoDto,
+  ) {
     return this.proyectoService.update(id, updateProyectoDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Eliminar un proyecto (solo si no tiene tareas sin completar)' })
+  @ApiOperation({
+    summary: 'Eliminar un proyecto (solo si no tiene tareas sin completar)',
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.proyectoService.remove(id);
   }

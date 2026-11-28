@@ -6,9 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProyectoModule } from '../proyecto/proyecto.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tarea]),
-  ProyectoModule
-  ],
+  imports: [TypeOrmModule.forFeature([Tarea]), ProyectoModule],
   controllers: [TareaController],
   providers: [TareaService],
 })

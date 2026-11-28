@@ -1,11 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TareaService } from './tarea.service.js';
 import { CreateTareaDto } from './dto/create-tarea.dto.js';
 import { UpdateTareaDto } from './dto/update-tarea.dto.js';
 import { CambiarEstadoTareaDto } from './dto/cambiar-estado-tarea.dto.js';
 import { FiltrarTareasDto } from './dto/filtrar-tarea.dto.js';
-
 
 @ApiTags('Tareas/v1')
 @Controller('tarea')
@@ -19,7 +28,9 @@ export class TareaController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar tareas (filtros opcionales: estado y prioridad)' })
+  @ApiOperation({
+    summary: 'Listar tareas (filtros opcionales: estado y prioridad)',
+  })
   findAll(@Query() filtros: FiltrarTareasDto) {
     return this.tareaService.findAll(filtros);
   }
@@ -47,7 +58,10 @@ export class TareaController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar una tarea' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateTareaDto: UpdateTareaDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTareaDto: UpdateTareaDto,
+  ) {
     return this.tareaService.update(id, updateTareaDto);
   }
 

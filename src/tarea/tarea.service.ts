@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, LessThan, Not, Repository } from 'typeorm';
 import { Tarea } from './entities/tarea.entity.js';
@@ -24,24 +28,39 @@ export class TareaService {
     return this.tareaRepository.save(tarea);
   }
 
-  findAll(filtros: FiltrarTareasDto) {
-    const where: FindOptionsWhere<Tarea> = {};
-    if (filtros.estado) where.estado = filtros.estado;
-    if (filtros.prioridad) where.prioridad = filtros.prioridad;
+  async findAll(filtros: FiltrarTareasDto) {
+    if (!filtros.prioridad && !filtros.estado)
+      throw new BadRequestException('Debes enviar al menos un filtro');
 
-    return this.tareaRepository.find({ where });
+    const condiciones: FindOptionsWhere<Tarea> = {};
+    if (filtros.estado) condiciones.estado = filtros.estado;
+    if (filtros.prioridad) condiciones.prioridad = filtros.prioridad;
+
+    const tareas = await this.tareaRepository.find({ where: condiciones });
+    if (!tareas.length)
+      throw new NotFoundException(
+        'No se encontraron tareas con los filtros proporcionados',
+      );
+
+    return tareas;
   }
 
-  findVencidas() {
+  async findVencidas() {
     const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+    hoy.setUTCHours(0, 0, 0, 0);
 
-    return this.tareaRepository.find({
+    const tareaVencida = await this.tareaRepository.find({
       where: {
         fecha_limite: LessThan(hoy),
         estado: Not(TAREA_ESTADO.COMPLETA),
       },
     });
+
+    if (!tareaVencida.length) {
+      throw new NotFoundException('No hay tareas vencidas.');
+    }
+
+    return tareaVencida;
   }
 
   async findOne(id: number) {
@@ -56,7 +75,10 @@ export class TareaService {
     const tarea = await this.findOne(id);
 
     // Si quieren moverla a otro proyecto, ese proyecto debe existir
-    if (updateTareaDto.proyecto_id && updateTareaDto.proyecto_id !== tarea.proyecto_id) {
+    if (
+      updateTareaDto.proyecto_id &&
+      updateTareaDto.proyecto_id !== tarea.proyecto_id
+    ) {
       await this.proyectoService.findOne(updateTareaDto.proyecto_id);
     }
 
@@ -67,7 +89,9 @@ export class TareaService {
   async cambiarEstado(id: number, cambiarEstadoDto: CambiarEstadoTareaDto) {
     const tarea = await this.findOne(id);
     if (tarea.estado === cambiarEstadoDto.estado) {
-      throw new BadRequestException(`La tarea ya está en estado ${cambiarEstadoDto.estado}`);
+      throw new BadRequestException(
+        `La tarea ya está en estado ${cambiarEstadoDto.estado}`,
+      );
     }
     tarea.estado = cambiarEstadoDto.estado;
     return this.tareaRepository.save(tarea);

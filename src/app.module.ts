@@ -22,8 +22,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         ...configService.getOrThrow('database'),
       }),
     }),
-    ProyectoModule, 
-    TareaModule
+    ProyectoModule,
+    TareaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
